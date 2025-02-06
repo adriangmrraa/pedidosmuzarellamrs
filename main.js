@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Crear el panel de papas
   const friesPanel = document.createElement("div");
   friesPanel.className = "fries-panel";
-  friesPanel.innerHTML = `<div class="fries-panel-header"> <h3>Papas Fritas</h3> </div> <div class="quantity-control"> <button class="quantity-btn minus">-</button> <div class="quantity-value">0</div> <button class="quantity-btn plus">+</button> </div> <div class="price">$2800</div> <button class="add-fries-btn">Agregar al pedido</button>`;
+  friesPanel.innerHTML = `<div class="fries-panel-header"> <h3>Papas Fritas</h3> </div> <div class="quantity-control"> <button class="quantity-btn minus">-</button> <input type="number" class="quantity-value" min="0" max="100" value="0"> <button class="quantity-btn plus">+</button> </div> <div class="price">$2800</div> <button class="add-fries-btn">Agregar al pedido</button>`;
   document.body.appendChild(friesPanel);
 
   // Crear el texto popup (sin cambios)
@@ -266,9 +266,10 @@ document.addEventListener("DOMContentLoaded", () => {
     addBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       const name = panel.querySelector(".burger-panel-header h3").textContent;
+      const quantityInput = panel.querySelector(".quantity-value");
       const burgerState = {
         name: name,
-        quantity: parseInt(panel.querySelector(".quantity-value").value),
+        quantity: parseInt(quantityInput.value),
         price: parseInt(
           panel.querySelector(".price").textContent.replace("$", "")
         ),
@@ -312,7 +313,6 @@ document.addEventListener("DOMContentLoaded", () => {
       quantity: orderState.fries.quantity, // Inicializar con la cantidad existente
       price: 2800,
     };
-
     const quantityInput = friesPanel.querySelector(".quantity-value");
 
     friesPanel.querySelector(".plus").addEventListener("click", (e) => {
