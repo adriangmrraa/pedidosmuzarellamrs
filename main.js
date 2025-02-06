@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     burgers: [],
     fries: {
       quantity: 0,
-      price: 2800,
+      price: 2000,
     },
   };
 
