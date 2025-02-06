@@ -1,0 +1,15 @@
+{
+  "name": "mrs-mozzarella",
+  "version": "1.0.0",
+  "description": "Las mejores hamburguesas gourmet con delivery. Prueba nuestras hamburguesas artesanales con ingredientes premium.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
+}
