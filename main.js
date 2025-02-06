@@ -1,35 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Inicialización del Swiper
+  // Inicialización del Swiper (sin cambios)
   const swiper = new Swiper(".swiper", {
-    // Parámetros opcionales
     direction: "horizontal",
     loop: true,
-
-    // Paginación
     pagination: {
       el: ".swiper-pagination",
       clickable: true,
     },
-
-    // Navegación
     navigation: {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
-
-    // Autoplay (opcional)
     autoplay: {
       delay: 5000,
       disableOnInteraction: false,
     },
-
-    // Efectos
     effect: "fade",
     fadeEffect: {
       crossFade: true,
     },
-
-    // Responsive breakpoints
     breakpoints: {
       320: {
         slidesPerView: 1,
@@ -51,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // Crear el ícono flotante de papas
+  // Crear el ícono flotante de papas (sin cambios)
   const friesIconFloat = document.createElement("div");
   friesIconFloat.className = "fries-icon-floating";
   friesIconFloat.innerHTML = `<img src="assets/icons/fries.png" alt="Papas Fritas" style="width: 30px; height: 30px;">`;
@@ -63,21 +52,19 @@ document.addEventListener("DOMContentLoaded", () => {
   friesPanel.innerHTML = `<div class="fries-panel-header"> <h3>Papas Fritas</h3> </div> <div class="quantity-control"> <button class="quantity-btn minus">-</button> <div class="quantity-value">0</div> <button class="quantity-btn plus">+</button> </div> <div class="price">$2800</div> <button class="add-fries-btn">Agregar al pedido</button>`;
   document.body.appendChild(friesPanel);
 
-  // Crear el texto popup
+  // Crear el texto popup (sin cambios)
   const friesTextPopup = document.createElement("div");
   friesTextPopup.className = "fries-text-popup";
   friesTextPopup.innerHTML = "¿Unas papas 🍟?";
   document.body.appendChild(friesTextPopup);
 
-  // Mostrar ícono y texto después de 5 segundos
+  // Mostrar ícono y texto después de 5 segundos (sin cambios)
   setTimeout(() => {
     friesIconFloat.classList.add("show");
     friesTextPopup.classList.add("show");
 
-    // Ocultar el texto después de 4 segundos
     setTimeout(() => {
       friesTextPopup.classList.add("hide");
-      // Remover el elemento después de la animación
       setTimeout(() => {
         friesTextPopup.style.visibility = "hidden";
       }, 500);
@@ -86,13 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Evento click para el ícono de papas
   friesIconFloat.addEventListener("click", (e) => {
-    e.stopPropagation(); // Evitar que el evento se propague al document
+    e.stopPropagation();
     const quantityInput = friesPanel.querySelector(".quantity-value");
-    quantityInput.value = orderState.fries.quantity; // Mostrar cantidad actual
+    orderState.fries.quantity = 0; // Resetear la cantidad en el panel de papas
+    quantityInput.value = orderState.fries.quantity;
     friesPanel.classList.add("show");
   });
 
-  // Función para configurar los eventos de los botones de compra
+  // Función para configurar los eventos de los botones de compra (sin cambios)
   function setupBuyButtons() {
     document.querySelectorAll(".buy-button").forEach((button) => {
       button.addEventListener("click", (e) => {
@@ -118,49 +106,71 @@ document.addEventListener("DOMContentLoaded", () => {
     setupBuyButtons();
   });
 
-  // Asegurarse de que los botones funcionen en dispositivos táctiles
+  // Asegurarse de que los botones funcionen en dispositivos táctiles (sin cambios)
   document.addEventListener("touchstart", function () {}, true);
 
-  function showBurgerPanel(name, description, price) {
-    let burgerPanel = document.querySelector(".burger-panel");
+  // ************************************************************************************
+  // CREACIÓN DEL PANEL FUERA DE showBurgerPanel PARA EVITAR MÚLTIPLES LISTENERS
+  // ************************************************************************************
+  let burgerPanel = document.querySelector(".burger-panel");
 
-    if (!burgerPanel) {
-      burgerPanel = document.createElement("div");
-      burgerPanel.className = "burger-panel";
-      burgerPanel.innerHTML = `
+  if (!burgerPanel) {
+    burgerPanel = document.createElement("div");
+    burgerPanel.className = "burger-panel";
+    burgerPanel.innerHTML = `
                 <div class="burger-panel-header">
                     <h3></h3>
                     <p class="burger-description"></p>
                 </div>
                 <div class="quantity-control">
                     <button class="quantity-btn minus">-</button>
-                    <div class="quantity-value">0</div>
+                    <input type="number" class="quantity-value" min="0" max="100" value="0">
                     <button class="quantity-btn plus">+</button>
                 </div>
                 <div class="price"></div>
                 <button class="add-burger-btn">AGREGAR AL PEDIDO</button>
             `;
-      document.body.appendChild(burgerPanel);
-    }
+    document.body.appendChild(burgerPanel);
 
-    // Buscar hamburguesa existente en el pedido
+    // Configurar los eventos del panel (SOLO UNA VEZ)
+    setupBurgerPanelEvents(burgerPanel);
+  }
+
+  function showBurgerPanel(name, description, price) {
+    // ************************************************************************************
+    // MODIFICACIÓN IMPORTANTE: Resetear la cantidad en el panel de hamburguesas cada vez que se abre
+    // ************************************************************************************
     const existingBurger = orderState.burgers.find((b) => b.name === name);
-    const burgerState = {
-      name: name,
-      description: description,
-      price: price,
-      quantity: existingBurger ? existingBurger.quantity : 0,
-    };
+    let initialQuantity = 0;
+    if (existingBurger) {
+      initialQuantity = existingBurger.quantity;
+    }
 
     burgerPanel.querySelector("h3").textContent = name;
     burgerPanel.querySelector(".burger-description").textContent = description;
     burgerPanel.querySelector(".price").textContent = `$${price}`;
-    burgerPanel.querySelector(".quantity-value").textContent =
-      burgerState.quantity;
 
+    // ************************************************************************************
+    //  Crear un objeto burgerState local a esta función, para evitar problemas de estado
+    // ************************************************************************************
+    const burgerState = {
+      name: name,
+      description: description,
+      price: price,
+      quantity: initialQuantity,
+    };
+
+    const quantityInput = burgerPanel.querySelector(".quantity-value");
+    quantityInput.value = burgerState.quantity;
+
+    //  Actualizar el estado del panel con la cantidad existente
+    updateQuantityControls(
+      burgerPanel,
+      burgerState,
+      updateOrderSummary,
+      orderState
+    );
     burgerPanel.classList.add("show");
-
-    setupBurgerPanelEvents(burgerPanel, burgerState);
   }
 
   function setupQuantityControls(container, state, updateCallback) {
@@ -215,24 +225,57 @@ document.addEventListener("DOMContentLoaded", () => {
     return input;
   }
 
-  // Actualizar setupBurgerPanelEvents
-  function setupBurgerPanelEvents(panel, burgerState) {
-    const quantityInput = setupQuantityControls(panel, burgerState);
-    const addBtn = panel.querySelector(".add-burger-btn");
+  //  ************************************************************************************
+  //  MODIFICACIÓN IMPORTANTE: Pasar el burgerState a esta funcion y hacerla mas general
+  //  ************************************************************************************
+  function updateQuantityControls(
+    panel,
+    burgerState,
+    updateOrderSummary,
+    orderState
+  ) {
+    const quantityInput = panel.querySelector(".quantity-value");
 
-    // Al abrir el panel, cargar la cantidad existente
+    //  Buscar hamburguesa existente en el pedido
     const existingBurger = orderState.burgers.find(
       (b) => b.name === burgerState.name
     );
     if (existingBurger) {
       burgerState.quantity = existingBurger.quantity;
-      quantityInput.value = existingBurger.quantity;
+      quantityInput.value = burgerState.quantity;
     }
+
+    const plusBtn = panel.querySelector(".plus");
+    const minusBtn = panel.querySelector(".minus");
+
+    plusBtn.addEventListener("click", (e) => {
+      burgerState.quantity = Math.min(burgerState.quantity + 1, 100);
+      quantityInput.value = burgerState.quantity;
+    });
+
+    minusBtn.addEventListener("click", (e) => {
+      burgerState.quantity = Math.max(burgerState.quantity - 1, 0);
+      quantityInput.value = burgerState.quantity;
+    });
+  }
+
+  // Actualizar setupBurgerPanelEvents
+  function setupBurgerPanelEvents(panel) {
+    const addBtn = panel.querySelector(".add-burger-btn");
 
     addBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      const name = panel.querySelector(".burger-panel-header h3").textContent;
+      const burgerState = {
+        name: name,
+        quantity: parseInt(panel.querySelector(".quantity-value").value),
+        price: parseInt(
+          panel.querySelector(".price").textContent.replace("$", "")
+        ),
+      };
+
       const existingBurgerIndex = orderState.burgers.findIndex(
-        (burger) => burger.name === burgerState.name
+        (burger) => burger.name === name
       );
 
       if (burgerState.quantity > 0) {
@@ -270,13 +313,19 @@ document.addEventListener("DOMContentLoaded", () => {
       price: 2800,
     };
 
-    const quantityInput = setupQuantityControls(friesPanel, friesState, () => {
-      // Actualizar la cantidad en el estado global
+    const quantityInput = friesPanel.querySelector(".quantity-value");
+
+    friesPanel.querySelector(".plus").addEventListener("click", (e) => {
+      friesState.quantity = Math.min(friesState.quantity + 1, 100);
+      quantityInput.value = friesState.quantity;
       orderState.fries.quantity = friesState.quantity;
     });
 
-    // Al abrir el panel, mostrar la cantidad actual
-    quantityInput.value = orderState.fries.quantity;
+    friesPanel.querySelector(".minus").addEventListener("click", (e) => {
+      friesState.quantity = Math.max(friesState.quantity - 1, 0);
+      quantityInput.value = friesState.quantity;
+      orderState.fries.quantity = friesState.quantity;
+    });
 
     const addBtn = friesPanel.querySelector(".add-fries-btn");
     addBtn.addEventListener("click", (e) => {
